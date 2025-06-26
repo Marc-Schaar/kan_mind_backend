@@ -1,5 +1,59 @@
-# Virtual Environments
-env
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.so
 
-# Django
-db.sqlite3
+# Django migrations
+**/migrations/
+!**/migrations/__init__.py  # <- damit Django weiß, dass es ein Paket ist
+
+# SQLite database
+*.sqlite3
+*.db
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# virtual environments
+env/
+venv/
+ENV/
+*.egg-info/
+.eggs/
+
+# Python virtualenv cache
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Logs
+*.log
+
+# Coverage reports
+htmlcov/
+.coverage*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Test reports
+junit-*.xml
+
+# Pytest
+.pytest_cache/
+
+# Static/media (optional, falls generiert)
+staticfiles/
+media/
+
+# Secrets & config
+.env
+.env.*
+
+# Node (falls du Frontend im Projekt hast)
+node_modules/
