@@ -8,9 +8,9 @@ class Boards(models.Model):
     members = models.ManyToManyField(
         User, related_name='members', blank=True,)
     ticket_count = models.PositiveIntegerField(editable=False, default=True)
-    task_to_do_count = models.PositiveIntegerField(
+    tasks_to_do_count = models.PositiveIntegerField(
         editable=False, default=True)
-    task_high_priority_count = models.PositiveIntegerField(
+    tasks_high_prio_count = models.PositiveIntegerField(
         editable=False, default=True)
     owner_id = models.IntegerField(editable=False)
 
