@@ -9,7 +9,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from .serializers import RegistrationSerializer
 
 
-class UserProfileList(generics.ListCreateAPIView):
+class UserProfileList(generics.ListAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
@@ -30,7 +30,7 @@ class CustomLogin(ObtainAuthToken):
             user = serializer.validated_data['user']
             token, created = Token.objects.get_or_create(user=user)
             data = {
-                'username': user.username,
+                'fullname': user.username,
                 'email': user.email,
                 'token': token.key
             }
@@ -51,9 +51,10 @@ class RegesistrationView(APIView):
             saved_account = serializer.save()
             token, created = Token.objects.get_or_create(user=saved_account)
             data = {
-                'username': saved_account.username,
+                'fullname': saved_account.username,
                 'email': saved_account.email,
-                'token': token.key
+                'token': token.key,
+                'user_id': saved_account.id
             }
         else:
             data = serializer.errors

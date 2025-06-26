@@ -1,16 +1,20 @@
 from rest_framework import serializers
 from kanban_app.models import Boards
+from django.contrib.auth.models import User
+
+
+class UserSimpleSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'full_name']
+
+    def get_full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}".strip()
 
 
 class BoardsSerializer(serializers.ModelSerializer):
-    member_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Boards
-        exclude = []
-
-    def get_member_count(self, obj):
-        return obj.members.count()
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('fields', None)
@@ -32,3 +36,13 @@ class BoardsSerializer(serializers.ModelSerializer):
             # for field_name in existing - set(allowed):
             #     self.fields.pop(field_name)
             pass
+
+    members = UserSimpleSerializer(many=True, read_only=True)
+    member_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Boards
+        exclude = []
+
+    def get_member_count(self, obj):
+        return obj.members.count()
