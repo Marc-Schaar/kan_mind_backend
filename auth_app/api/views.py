@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from auth_app.models import UserProfile
 from .serializers import UserProfileSerializer
 from rest_framework.views import APIView
@@ -56,7 +56,14 @@ class RegesistrationView(APIView):
                 'token': token.key,
                 'user_id': saved_account.id
             }
-        else:
-            data = serializer.errors
 
-        return Response(data)
+            headers = {
+                'Status-Message': 'User wurde erfolgreich erstellt'
+            }
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED,  headers=headers)
+        else:
+            headers = {
+                'Status-Message': 'Ungültige Anfragedaten.'
+            }
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST,  headers=headers)
