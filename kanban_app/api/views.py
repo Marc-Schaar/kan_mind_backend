@@ -1,7 +1,7 @@
 
 from rest_framework import generics
-from kanban_app.models import Boards
-from .serializer import BoardListSerializer, BoardDetailSerializer
+from kanban_app.models import Boards, Task
+from .serializer import BoardListSerializer, BoardDetailSerializer, TaskListSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -35,3 +35,11 @@ class BoardListView(generics.ListCreateAPIView):
 class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Boards.objects.all()
     serializer_class = BoardDetailSerializer
+
+
+class TaskListView(generics.ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskListSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()

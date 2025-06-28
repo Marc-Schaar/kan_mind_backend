@@ -15,11 +15,10 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.get_full_name()
 
 
-class TaskSerializer(serializers.ModelSerializer):
+class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'status',
-                  'priority', 'assignee', 'reviewer', 'due_date']
+        fields = '__all__'
 
 
 class BoardListSerializer(serializers.ModelSerializer):
@@ -39,14 +38,7 @@ class BoardListSerializer(serializers.ModelSerializer):
 class BoardDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Boards
-        fields = ['id', 'title', 'owner_id', 'members']
+        fields = ['id', 'title', 'owner_id', 'members', 'tasks']
 
-    members = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=User.objects.all())
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['members'] = UserSerializer(
-            instance.members.all(), many=True).data
-        return rep
+    members = UserSerializer(many=True, read_only=True)
+    tasks = TaskListSerializer(many=True, read_only=True)
