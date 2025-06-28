@@ -1,23 +1,22 @@
 from rest_framework import generics, status
-from auth_app.models import UserProfile, User
-from .serializers import UserProfileSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-from .serializers import RegistrationSerializer
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from .serializers import UserSerializer, RegistrationSerializer
 
 
 class UserProfileList(generics.ListAPIView):
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class CustomLogin(ObtainAuthToken):
@@ -53,7 +52,7 @@ class CustomLogin(ObtainAuthToken):
 
 class RegesistrationView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = UserProfileSerializer
+    serializer_class = UserSerializer
 
     def post(self, request):
         serializer = RegistrationSerializer(data=request.data)
@@ -71,6 +70,6 @@ class RegesistrationView(APIView):
             headers = {
                 'Status-Message': 'User wurde erfolgreich erstellt'
             }
-            return Response(serializer.data,  headers=headers, status=status.HTTP_201_CREATED)
+            return Response(data,  headers=headers, status=status.HTTP_201_CREATED)
         else:
             return Response({'error': 'Ungültige Anfragedaten.'}, status=status.HTTP_400_BAD_REQUEST)

@@ -4,8 +4,7 @@ from django.contrib.auth.models import User
 
 class Boards(models.Model):
     title = models.CharField(max_length=100, default=True)
-    members = models.ManyToManyField(
-        User, related_name='members', blank=True,)
+    members = models.ManyToManyField(User, related_name='boards')
     ticket_count = models.PositiveIntegerField(editable=False, default=True)
     tasks_to_do_count = models.PositiveIntegerField(
         editable=False, default=True)
