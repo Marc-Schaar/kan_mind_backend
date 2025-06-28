@@ -1,9 +1,7 @@
 from django.urls import path, include
-from kanban_app.api.views import BoardViewset
-from rest_framework import routers
-
-router = routers.SimpleRouter()
-router.register(r'boards', BoardViewset)
+from kanban_app.api.views import BoardListView, BoardDetailView
 
 urlpatterns = [
-    path('', include(router.urls)),]
+    path('boards/', BoardListView.as_view(), name='board-list'),
+    path('boards/<int:pk>/', BoardDetailView.as_view(), name='board-detail'),
+]

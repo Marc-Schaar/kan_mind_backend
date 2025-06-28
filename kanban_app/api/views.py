@@ -1,15 +1,14 @@
 
-from rest_framework import viewsets
+from rest_framework import generics
 from kanban_app.models import Boards
-from .serializer import BoardsSerializer
+from .serializer import BoardListSerializer, BoardDetailSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
 
-class BoardViewset(viewsets.ModelViewSet):
-
+class BoardListView(generics.ListCreateAPIView):
     queryset = Boards.objects.all()
-    serializer_class = BoardsSerializer
+    serializer_class = BoardListSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -17,7 +16,7 @@ class BoardViewset(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             board = serializer.save(owner_id=self.request.user.id)
-            board.members.add(self.request.user)
+            board.members.add(request.user)
             data = {
                 'id': board.id,
                 'title': board.title,
@@ -26,9 +25,13 @@ class BoardViewset(viewsets.ModelViewSet):
                 'tasks_to_do_count': board.tasks_to_do_count,
                 'tasks_high_prio_count': board.tasks_high_prio_count,
                 'owner_id': board.owner_id,
-
             }
-            return Response(data, status=status.HTTP_201_CREATED, )
+            return Response(data, status=status.HTTP_201_CREATED)
 
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Boards.objects.all()
+    serializer_class = BoardDetailSerializer
