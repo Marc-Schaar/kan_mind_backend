@@ -4,14 +4,14 @@ from django.contrib.auth.models import User
 
 
 class UserSimpleSerializer(serializers.ModelSerializer):
-    full_name = serializers.SerializerMethodField()
+    fullname = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name']
+        fields = ['id', 'email', 'fullname']
 
-    def get_full_name(self, obj):
-        return f"{obj.first_name} {obj.last_name}".strip()
+    def get_fullname(self, obj):
+        return obj.get_full_name()
 
 
 class BoardsSerializer(serializers.ModelSerializer):
