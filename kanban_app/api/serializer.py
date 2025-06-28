@@ -48,10 +48,10 @@ class BoardsSerializer(serializers.ModelSerializer):
             existing = set(self.fields)
             for field_name in existing - set(allowed):
                 self.fields.pop(field_name)
-        elif view and view.action == 'retrieve':
 
+        elif view and view.action == 'retrieve':
             allowed = ['id', 'title', 'owner_id', 'members', ]
             existing = set(self.fields)
             for field_name in existing - set(allowed):
                 self.fields.pop(field_name)
-            self.fields = {field: self.fields[field] for field in allowed}
+                self.fields = {field: self.fields[field] for field in allowed}
