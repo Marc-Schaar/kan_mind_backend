@@ -56,6 +56,14 @@ class TaskAssignedToMeView(generics.ListAPIView):
         return Task.objects.filter(assignee=user).order_by('board__id')
 
 
+class TaskReviewingView(generics.ListAPIView):
+    serializer_class = TaskListSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Task.objects.filter(reviewer=user).order_by('board__id')
+
+
 class CommentOfTasksList(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
 
