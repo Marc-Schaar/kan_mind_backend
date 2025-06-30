@@ -1,9 +1,10 @@
 
 from rest_framework import generics
-from kanban_app.models import Boards, Task
+from kanban_app.models import Boards, Task, Comment
 from .serializer import BoardListSerializer, BoardDetailSerializer, TaskListSerializer, TaskDetailSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 
 
 class BoardListView(generics.ListCreateAPIView):
@@ -73,3 +74,11 @@ class CommentOfTasksList(generics.ListCreateAPIView):
 
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentOfTasksListDetail(generics.DestroyAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        task_id = self.kwargs['task_id']
+        return Comment.objects.filter(task_id=task_id)

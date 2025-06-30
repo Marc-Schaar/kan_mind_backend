@@ -1,5 +1,5 @@
 from django.urls import path
-from kanban_app.api.views import BoardListView, BoardDetailView, TaskListView, TaskDetailView, CommentOfTasksList
+from kanban_app.api.views import BoardListView, BoardDetailView, TaskListView, TaskDetailView, CommentOfTasksList, CommentOfTasksListDetail
 
 urlpatterns = [
     path('boards/', BoardListView.as_view(), name='board-list'),
@@ -8,5 +8,7 @@ urlpatterns = [
     path('tasks/<int:pk>/', TaskDetailView.as_view(), name='task-detail'),
     path('tasks/<int:pk>/comments/',
          CommentOfTasksList.as_view(), name='task-comments'),
+    path('tasks/<int:task_id>/comments/<int:pk>/',
+         CommentOfTasksListDetail.as_view(), name='task-comments-detail'),
 
 ]
