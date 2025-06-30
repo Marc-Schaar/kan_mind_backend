@@ -8,8 +8,6 @@ class Boards(models.Model):
         User, on_delete=models.CASCADE, related_name='owned_boards')
     members = models.ManyToManyField(User, related_name='boards')
     ticket_count = models.PositiveIntegerField(editable=False, default=True)
-    tasks_high_prio_count = models.PositiveIntegerField(
-        editable=False, default=True)
 
     def __str__(self):
         return self.title
