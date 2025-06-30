@@ -44,19 +44,14 @@ class BoardListSerializer(serializers.ModelSerializer):
 
     member_count = serializers.SerializerMethodField()
     members = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(), many=True,)
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['members'] = UserSerializer(
-            instance.members.all(), many=True).data
-        return rep
+        queryset=User.objects.all(), many=True, write_only=True)
 
     def get_member_count(self, obj):
         return len(obj.members.all())
 
 
 class BoardDetailSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(read_only=True)
     owner_id = serializers.IntegerField(read_only=True)
     owner_data = UserSerializer(read_only=True, source='owner')
     tasks = TaskSerializer(many=True, read_only=True)
