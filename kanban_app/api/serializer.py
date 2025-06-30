@@ -14,6 +14,17 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.username if obj.get_full_name() else obj.username
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'created_at', 'author', 'content']
+
+    def get_author(self, obj):
+        return obj.author.get_full_name() or obj.author.username
+
+
 class TaskListSerializer(serializers.ModelSerializer):
     assignee = UserSerializer(read_only=True)
     reviewer = UserSerializer(read_only=True)
@@ -38,6 +49,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
     reviewer = UserSerializer(read_only=True)
     reviewer_id = serializers.PrimaryKeyRelatedField(
         source='reviewer', queryset=User.objects.all(), write_only=True, allow_null=True)
+    comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Task
@@ -100,14 +112,3 @@ class BoardDetailSerializer(serializers.ModelSerializer):
         rep['members'] = UserSerializer(
             instance.members.all(), many=True).data
         return rep
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Comment
-        fields = ['id', 'created_at', 'author', 'content']
-
-    def get_author(self, obj):
-        return obj.author.get_full_name() or obj.author.username
