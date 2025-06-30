@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     fullname = serializers.SerializerMethodField()
 
     def get_fullname(self, obj):
-        return obj.get_full_name()
+        return obj.username if obj.get_full_name() else obj.username
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -43,7 +43,6 @@ class BoardListSerializer(serializers.ModelSerializer):
                   'tasks_to_do_count', 'tasks_high_prio_count', 'owner_id', 'members']
 
     member_count = serializers.SerializerMethodField()
-    members = UserSerializer(many=True, read_only=True)
     members = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), many=True,)
 
@@ -58,18 +57,26 @@ class BoardListSerializer(serializers.ModelSerializer):
 
 
 class BoardDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Boards
-        fields = ['id', 'title', 'owner_id', 'members', 'tasks']
-
-    members = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=User.objects.all()
-    )
+    owner_id = serializers.IntegerField(read_only=True)
+    owner_data = UserSerializer(read_only=True, source='owner')
     tasks = TaskSerializer(many=True, read_only=True)
 
-    def update(self, instance, validated_data):
-        members = validated_data.pop('members', None)
-        instance.title = validated_data.get('title', instance.title)
-        instance.owner_id = validated_data.get('owner_id', instance.owner_id)
-        instance.save()
-        return instance
+    class Meta:
+        model = Boards
+        fields = ['id', 'title', 'owner_id', 'owner_data', 'members', 'tasks']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        request = self.context.get('request')
+        if request and request.method == 'GET':
+            self.fields.pop('owner_data', None)
+
+        if request and request.method == 'PUT' or request.method == 'PATCH':
+            self.fields.pop('owner_id', None)
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['members'] = UserSerializer(
+            instance.members.all(), many=True).data
+        return rep
