@@ -31,23 +31,6 @@ class BoardListView(generics.ListCreateAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            board = serializer.save()
-            data = {
-                'id': board.id,
-                'title': board.title,
-                'owner_data': board.owner,
-                'members_data': UserSerializer(board.members.all(), many=True).data,
-            }
-            return Response(data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Boards.objects.all()
@@ -55,5 +38,10 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class TaskListView(generics.ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+
+class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer

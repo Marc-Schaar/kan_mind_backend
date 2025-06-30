@@ -81,6 +81,7 @@ class BoardDetailSerializer(serializers.ModelSerializer):
 
         if request and request.method == 'PUT' or request.method == 'PATCH':
             self.fields.pop('owner_id', None)
+            self.fields.pop('tasks', None)
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
