@@ -42,14 +42,18 @@ class BoardListSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'member_count', 'ticket_count',
                   'tasks_to_do_count', 'tasks_high_prio_count', 'owner_id', 'members']
 
-    member_count = serializers.SerializerMethodField()
     members = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), many=True, write_only=True)
+    member_count = serializers.SerializerMethodField()
+    ticket_count = serializers.SerializerMethodField()
     tasks_to_do_count = serializers.SerializerMethodField()
     tasks_high_prio_count = serializers.SerializerMethodField()
 
     def get_member_count(self, obj):
         return len(obj.members.all())
+
+    def get_ticket_count(self, obj):
+        return obj.tasks.count()
 
     def get_tasks_to_do_count(self, obj):
         return obj.tasks.filter(status='to-do').count()

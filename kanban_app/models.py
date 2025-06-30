@@ -7,7 +7,6 @@ class Boards(models.Model):
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='owned_boards')
     members = models.ManyToManyField(User, related_name='boards')
-    ticket_count = models.PositiveIntegerField(editable=False, default=True)
 
     def __str__(self):
         return self.title
