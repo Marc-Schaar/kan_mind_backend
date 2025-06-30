@@ -1,10 +1,9 @@
 from rest_framework import serializers
-from kanban_app.models import Boards, Task
+from kanban_app.models import Boards, Task, Comment
 from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ['id', 'email', 'fullname']
@@ -101,3 +100,11 @@ class BoardDetailSerializer(serializers.ModelSerializer):
         rep['members'] = UserSerializer(
             instance.members.all(), many=True).data
         return rep
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'created_at', 'author', 'content']

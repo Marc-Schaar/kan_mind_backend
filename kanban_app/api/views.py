@@ -1,7 +1,7 @@
 
 from rest_framework import generics
 from kanban_app.models import Boards, Task
-from .serializer import BoardListSerializer, BoardDetailSerializer, TaskListSerializer, TaskDetailSerializer
+from .serializer import BoardListSerializer, BoardDetailSerializer, TaskListSerializer, TaskDetailSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -45,3 +45,31 @@ class TaskListView(generics.ListCreateAPIView):
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
+
+
+class CommentOfTasksList(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs.get('pk')
+        task = Task.objects.get(pk=pk)
+        return task.comments.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        data = {}
+
+        if serializer.is_valid():
+            comment = serializer.save(
+                author=self.request.user, task_id=self.kwargs.get('pk'))
+            data = {
+                'id': comment.id,
+                'created_at': comment.created_at,
+                'author': comment.author.id,
+                'content': comment.content,
+
+            }
+            return Response(data, status=status.HTTP_201_CREATED)
+
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
