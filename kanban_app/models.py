@@ -8,8 +8,6 @@ class Boards(models.Model):
         User, on_delete=models.CASCADE, related_name='owned_boards')
     members = models.ManyToManyField(User, related_name='boards')
     ticket_count = models.PositiveIntegerField(editable=False, default=True)
-    tasks_to_do_count = models.PositiveIntegerField(
-        editable=False, default=True)
     tasks_high_prio_count = models.PositiveIntegerField(
         editable=False, default=True)
 
@@ -18,14 +16,25 @@ class Boards(models.Model):
 
 
 class Task(models.Model):
+    STATUS_CHOICES = [
+        ('to-do', 'To Do'),
+        ('in-progress', 'In Progress'),
+        ('review', 'Review'),
+        ('done', 'Done'),
+    ]
+
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+    ]
+
     board = models.ForeignKey(
-        Boards, on_delete=models.CASCADE, related_name='tasks'
-    )
+        Boards, on_delete=models.CASCADE, related_name='tasks')
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    status = models.CharField(max_length=20, default='')
-    priority = models.CharField(max_length=20, default='low')
-
+    status = models.CharField(choices=STATUS_CHOICES, default='to-do')
+    priority = models.CharField(choices=PRIORITY_CHOICES, default='low')
     assignee = models.ForeignKey(
         User, null=True, blank=True,
         related_name='assigned_tasks',
@@ -36,11 +45,11 @@ class Task(models.Model):
         related_name='review_tasks',
         on_delete=models.SET_NULL
     )
-
     due_date = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
-        return self.title
+
+def __str__(self):
+    return self.title
 
 
 class Comment(models.Model):
