@@ -48,6 +48,14 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TaskDetailSerializer
 
 
+class TaskAssignedToMeView(generics.ListAPIView):
+    serializer_class = TaskListSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Task.objects.filter(assignee=user).order_by('board__id')
+
+
 class CommentOfTasksList(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
 

@@ -45,10 +45,10 @@ class TaskListSerializer(serializers.ModelSerializer):
 class TaskDetailSerializer(serializers.ModelSerializer):
     assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
-        source='assignee', queryset=User.objects.all(), write_only=True, allow_null=True)
+        source='assignee', queryset=User.objects.all(), write_only=True)
     reviewer = UserSerializer(read_only=True)
     reviewer_id = serializers.PrimaryKeyRelatedField(
-        source='reviewer', queryset=User.objects.all(), write_only=True, allow_null=True)
+        source='reviewer', queryset=User.objects.all(), write_only=True)
     comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
@@ -58,6 +58,13 @@ class TaskDetailSerializer(serializers.ModelSerializer):
             'assignee', 'assignee_id', 'reviewer', 'reviewer_id',
             'due_date', 'comments'
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        request = self.context.get('request')
+        if request and request.method == 'PUT' or request.method == 'PATCH':
+            self.fields.pop('comments', None)
 
 
 class BoardListSerializer(serializers.ModelSerializer):
