@@ -34,8 +34,7 @@ class TaskListSerializer(serializers.ModelSerializer):
         model = Task
         fields = [
             'id', 'board', 'title', 'description', 'status', 'priority',
-            'assignee', 'reviewer',
-            'due_date', 'comments_count'
+            'assignee', 'reviewer', 'due_date', 'comments_count'
         ]
 
     def get_comments_count(self, obj):
@@ -94,7 +93,7 @@ class BoardListSerializer(serializers.ModelSerializer):
 
 
 class BoardDetailSerializer(serializers.ModelSerializer):
-    title = serializers.CharField(read_only=True)
+    title = serializers.CharField()
     owner_id = serializers.IntegerField(read_only=True)
     owner_data = UserSerializer(read_only=True, source='owner')
     tasks = TaskListSerializer(many=True, read_only=True)

@@ -1,15 +1,18 @@
 
-from rest_framework import generics
+from rest_framework import generics, status
+from rest_framework.response import Response
 from kanban_app.models import Boards, Task, Comment, User
 from .serializer import BoardListSerializer, BoardDetailSerializer, TaskListSerializer, TaskDetailSerializer, CommentSerializer, UserSerializer
-from rest_framework.response import Response
-from rest_framework import status
-from django.shortcuts import get_object_or_404
+from .permissions import IsLoggedIn, IsOwnerOrMember, IsOwnerToDelete
 
 
 class BoardListView(generics.ListCreateAPIView):
-    queryset = Boards.objects.all()
     serializer_class = BoardListSerializer
+    permission_classes = [IsLoggedIn, IsOwnerOrMember]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Boards.objects.filter(members=user).order_by('id')
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -36,6 +39,7 @@ class BoardListView(generics.ListCreateAPIView):
 class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Boards.objects.all()
     serializer_class = BoardDetailSerializer
+    permission_classes = [IsOwnerOrMember, IsOwnerToDelete]
 
 
 class TaskListView(generics.ListCreateAPIView):
@@ -106,3 +110,10 @@ class EmailCheckView(generics.ListAPIView):
     def get_queryset(self):
         email = self.request.query_params.get('email', None)
         return User.objects.filter(email=email)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        if not queryset:
+            return Response({"error": " Email nicht gefunden. Die Email exestiert nicht."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
