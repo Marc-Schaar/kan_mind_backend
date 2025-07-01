@@ -11,16 +11,44 @@ from .serializers import RegistrationSerializer, UserSerializer
 
 
 class UserProfileList(generics.ListAPIView):
+    """
+    API endpoint to list all users.
+
+    GET:
+        Returns a list of all registered users with basic info.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint to retrieve, update or delete a user by ID.
+
+    GET:
+        Retrieve user details.
+
+    PUT/PATCH:
+        Update user data.
+
+    DELETE:
+        Delete the user.
+    """
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class CustomLogin(ObtainAuthToken):
+    """
+    Custom login endpoint using email and password.
+
+    POST:
+        Authenticates user by email and password.
+        Returns auth token and basic user info if successful.
+        Returns error if email not found or authentication fails.
+    """
+
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -55,6 +83,15 @@ class CustomLogin(ObtainAuthToken):
 
 
 class RegesistrationView(APIView):
+    """
+    User registration endpoint.
+
+    POST:
+        Registers a new user using the RegistrationSerializer.
+        On success, returns the created user's info and auth token.
+        On failure, returns validation errors.
+    """
+
     permission_classes = [AllowAny]
     serializer_class = UserSerializer
 

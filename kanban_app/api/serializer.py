@@ -5,6 +5,10 @@ from kanban_app.models import Boards, Comment, Task
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Django User model.
+    Provides 'id', 'email' and 'fullname' fields.
+    """
     class Meta:
         model = User
         fields = ["id", "email", "fullname"]
@@ -16,6 +20,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Comment model.
+    Includes author name as a string, creation date and content.
+    """
+
     author = serializers.SerializerMethodField()
 
     class Meta:
@@ -27,6 +36,11 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class TaskListSerializer(serializers.ModelSerializer):
+    """
+    Serializer for listing tasks.
+    Includes assignee and reviewer info and count of comments.
+    Supports writing assignee_id and reviewer_id.
+    """
     assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
         source="assignee", queryset=User.objects.all(), write_only=True
@@ -59,6 +73,11 @@ class TaskListSerializer(serializers.ModelSerializer):
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):
+    """
+    Detailed serializer for a single task.
+    Includes nested assignee, reviewer, and comments.
+    Comments field is excluded on update requests (PUT/PATCH).
+    """
     assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
         source="assignee", queryset=User.objects.all(), write_only=True
@@ -95,6 +114,11 @@ class TaskDetailSerializer(serializers.ModelSerializer):
 
 
 class BoardListSerializer(serializers.ModelSerializer):
+    """
+    Serializer for listing boards.
+    Supports writing members by their user IDs.
+    Returns member count, ticket count, todo tasks count, and high priority tasks count.
+    """
     class Meta:
         model = Boards
         fields = [
@@ -130,6 +154,11 @@ class BoardListSerializer(serializers.ModelSerializer):
 
 
 class BoardDetailSerializer(serializers.ModelSerializer):
+    """
+    Detailed serializer for a single board.
+    Includes owner info and list of tasks.
+    Adjusts fields dynamically based on request method.
+    """
     title = serializers.CharField()
     owner_id = serializers.IntegerField(read_only=True)
     owner_data = UserSerializer(read_only=True, source="owner")

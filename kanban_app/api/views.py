@@ -14,6 +14,15 @@ from .serializer import (BoardDetailSerializer, BoardListSerializer,
 
 
 class BoardListView(generics.ListCreateAPIView):
+    """
+    API endpoint for listing and creating boards.
+
+    GET:
+        Returns all boards where the current user is a member.
+
+    POST:
+        Creates a new board and automatically adds the creator as a member.
+    """
     serializer_class = BoardListSerializer
     permission_classes = [IsLoggedIn, IsOwnerOrMember]
 
@@ -44,18 +53,59 @@ class BoardListView(generics.ListCreateAPIView):
 
 
 class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint to retrieve, update or delete a specific board.
+
+    get:
+    Retrieve details of a board.
+
+    put:
+    Update all fields of a board.
+
+    patch:
+    Partially update fields of a board.
+
+    delete:
+    Delete a board (only allowed for the owner).
+    """
+
     queryset = Boards.objects.all()
     serializer_class = BoardDetailSerializer
     permission_classes = [IsOwnerOrMember, IsOwnerToDelete]
 
 
 class TaskListView(generics.ListCreateAPIView):
+    """
+    API endpoint to list all tasks or create a new task.
+
+    get:
+    Return a list of all tasks.
+
+    post:
+    Create a new task (only members allowed).
+    """
+
     queryset = Task.objects.all()
     serializer_class = TaskListSerializer
     permission_classes = [IsMemberToCreate]
 
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint to retrieve, update or delete a specific task.
+
+    get:
+    Retrieve task details.
+
+    put:
+    Update all task fields.
+
+    patch:
+    Partially update task fields.
+
+    delete:
+    Delete a task (only creator or board owner allowed).
+    """
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
     permission_classes = [
@@ -66,6 +116,13 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class TaskAssignedToMeView(generics.ListAPIView):
+    """
+    API endpoint to list all tasks assigned to the current user.
+
+    get:
+    Return tasks where the current user is the assignee.
+    """
+
     serializer_class = TaskListSerializer
 
     def get_queryset(self):
@@ -74,6 +131,12 @@ class TaskAssignedToMeView(generics.ListAPIView):
 
 
 class TaskReviewingView(generics.ListAPIView):
+    """
+    API endpoint to list all tasks currently being reviewed by the user.
+
+    get:
+    Return tasks where the current user is the reviewer.
+    """
     serializer_class = TaskListSerializer
 
     def get_queryset(self):
@@ -82,6 +145,15 @@ class TaskReviewingView(generics.ListAPIView):
 
 
 class CommentOfTasksList(generics.ListCreateAPIView):
+    """
+    API endpoint to list comments for a task or create a new comment.
+
+    get:
+    Return all comments for the specified task, ordered by creation date descending.
+
+    post:
+    Create a new comment on the specified task. The author is set to the current user.
+    """
     serializer_class = CommentSerializer
     permission_classes = [IsMemberToCreateComment]
 
@@ -116,6 +188,13 @@ class CommentOfTasksList(generics.ListCreateAPIView):
 
 
 class CommentOfTasksListDetail(generics.DestroyAPIView):
+    """
+    API endpoint to delete a specific comment of a task.
+
+    delete:
+    Delete the comment (only allowed for the comment author).
+    """
+
     serializer_class = CommentSerializer
     permission_classes = [IsOwnerOfCommentToDelete]
 
@@ -125,6 +204,12 @@ class CommentOfTasksListDetail(generics.DestroyAPIView):
 
 
 class EmailCheckView(generics.ListAPIView):
+    """
+    API endpoint to check if a user with the given email exists.
+
+    get:
+    Return the user(s) matching the email query parameter. Returns 404 if none found.
+    """
     serializer_class = UserSerializer
 
     def get_queryset(self):
