@@ -23,7 +23,6 @@ It supports user registration, authentication, boards, tasks, comments, and perm
 - Python 3.10+
 - Django 5.2+
 - Django REST Framework
-- drf-spectacular (for API documentation)
 
 ---
 
