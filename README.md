@@ -1,6 +1,6 @@
-# Kanmind Backend API
+ #  ![KanMind Logo](assets/icons/logo_icon.svg)            Kanmind Backend API  
 
-[KanMind Logo](assets/icons/logo_icon.svg)
+
 
 This is a RESTful API backend for the **Kanmind** Kanban board application, built with Django and Django REST Framework (DRF).  
 It supports user registration, authentication, boards, tasks, comments, and permissions for collaborative task management.
@@ -23,7 +23,6 @@ It supports user registration, authentication, boards, tasks, comments, and perm
 - Python 3.10+
 - Django 5.2+
 - Django REST Framework
-- drf-spectacular (for API documentation)
 
 ---
 
