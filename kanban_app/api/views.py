@@ -3,7 +3,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from kanban_app.models import Boards, Task, Comment, User
 from .serializer import BoardListSerializer, BoardDetailSerializer, TaskListSerializer, TaskDetailSerializer, CommentSerializer, UserSerializer
-from .permissions import IsLoggedIn, IsOwnerOrMember, IsOwnerToDelete
+from .permissions import IsLoggedIn, IsOwnerOrMember, IsOwnerToDelete, IsMemberToCreate, IsMemberToUpdate, IsCreatorTaskrOrOwnerBoardToDelete, IsMemberToCreateComment, IsOwnerOfCommentToDelete
+from django.shortcuts import get_object_or_404
 
 
 class BoardListView(generics.ListCreateAPIView):
@@ -45,11 +46,14 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
 class TaskListView(generics.ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskListSerializer
+    permission_classes = [IsMemberToCreate]
 
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
+    permission_classes = [IsLoggedIn, IsMemberToUpdate,
+                          IsCreatorTaskrOrOwnerBoardToDelete]
 
 
 class TaskAssignedToMeView(generics.ListAPIView):
@@ -70,13 +74,19 @@ class TaskReviewingView(generics.ListAPIView):
 
 class CommentOfTasksList(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
+    permission_classes = [IsMemberToCreateComment]
+
+    def get_task(self):
+        pk = self.kwargs.get('pk')
+        return get_object_or_404(Task, pk=pk)
 
     def get_queryset(self):
         pk = self.kwargs.get('pk')
         task = Task.objects.get(pk=pk)
-        return task.comments.all()
+        return task.comments.all().order_by('-created_at')
 
     def create(self, request, *args, **kwargs):
+        task = self.get_task()
         serializer = self.get_serializer(data=request.data)
         data = {}
 
@@ -98,6 +108,7 @@ class CommentOfTasksList(generics.ListCreateAPIView):
 
 class CommentOfTasksListDetail(generics.DestroyAPIView):
     serializer_class = CommentSerializer
+    permission_classes = [IsOwnerOfCommentToDelete]
 
     def get_queryset(self):
         task_id = self.kwargs['task_id']

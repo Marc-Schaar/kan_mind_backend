@@ -1,4 +1,5 @@
-from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+from kanban_app.models import Boards
 
 
 class IsLoggedIn(BasePermission):
@@ -18,30 +19,61 @@ class IsOwnerOrMember(BasePermission):
 class IsOwnerToDelete(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method == 'DELETE':
-            if request.user.id == obj.owner_id:
-                return True
+            is_owner = request.user.id == obj.owner_id
+            return is_owner
+        return True
 
 
-class IsStaffOrReadOnly(BasePermission):
+class IsMemberToCreate(BasePermission):
     def has_permission(self, request, view):
-        return request.method in SAFE_METHODS or bool(request.user and request.user.is_staff)
+        if request.method == 'POST':
+            user = request.user
+            board_id = request.data.get('board')
+
+            exists = Boards.objects.filter(
+                id=board_id, members__id=user.id).exists()
+            return exists
+        return True
 
 
-class IsAdminForDeleteOrPatchAndReadOnly(BasePermission):
+class IsMemberToUpdate(BasePermission):
+    def has_permission(self, request, view):
+        if request.method == 'PATCH' or request.method == 'PUT':
+            user = request.user
+            board_id = request.data.get('board')
+
+            exists = Boards.objects.filter(
+                id=board_id, members__id=user.id).exists()
+            return exists
+        return True
+
+
+class IsCreatorTaskrOrOwnerBoardToDelete(BasePermission):
     def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS:
-            return True
-        elif request.method in ['DELETE']:
-            return bool(request.user and request.user.is_superuser)
-        else:
-            return bool(request.user and request.user.is_staff)
+        if request.method == 'DELETE':
+            user = request.user
+            is_creator = obj.creator_id == user.id
+            is_owner = obj.board.owner_id == user.id
+            return is_creator or is_owner
+        return True
 
 
-class IsOwnerOrAdmin(BasePermission):
+class IsMemberToCreateComment(BasePermission):
+    def has_permission(self, request, view):
+        if request.method == 'POST':
+            user = request.user
+            task_id = request.data.get('task')
+
+            exists = Boards.objects.filter(
+                tasks__id=task_id, members__id=user.id).exists()
+            return exists
+        return True
+
+
+class IsOwnerOfCommentToDelete(BasePermission):
     def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS:
-            return True
-        elif request.method in ['DELETE']:
-            return bool(request.user and request.user.is_superuser)
-        else:
-            return bool(request.user and request.user == obj.user)
+        if request.method == 'DELETE':
+            user = request.user
+            is_owner = obj.author_id == user.id
+            return is_owner
+        return True

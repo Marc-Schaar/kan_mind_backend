@@ -27,14 +27,18 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class TaskListSerializer(serializers.ModelSerializer):
     assignee = UserSerializer(read_only=True)
+    assignee_id = serializers.PrimaryKeyRelatedField(
+        source='assignee', queryset=User.objects.all(), write_only=True)
     reviewer = UserSerializer(read_only=True)
+    reviewer_id = serializers.PrimaryKeyRelatedField(
+        source='reviewer', queryset=User.objects.all(), write_only=True)
     comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Task
         fields = [
             'id', 'board', 'title', 'description', 'status', 'priority',
-            'assignee', 'reviewer', 'due_date', 'comments_count'
+            'assignee', 'assignee_id', 'reviewer', 'reviewer_id', 'due_date', 'comments_count'
         ]
 
     def get_comments_count(self, obj):
@@ -62,7 +66,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
 
         request = self.context.get('request')
-        if request and request.method == 'PUT' or request.method == 'PATCH':
+        if request and request.method in ['PUT', 'PATCH']:
             self.fields.pop('comments', None)
 
 
