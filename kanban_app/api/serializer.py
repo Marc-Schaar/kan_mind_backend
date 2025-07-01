@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from kanban_app.models import Boards, Task, Comment
+
+from kanban_app.models import Boards, Comment, Task
 
 
 class UserSerializer(serializers.ModelSerializer):

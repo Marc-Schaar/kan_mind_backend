@@ -1,25 +1,16 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
-from kanban_app.models import Boards, Task, Comment, User
-from .serializer import (
-    BoardListSerializer,
-    BoardDetailSerializer,
-    TaskListSerializer,
-    TaskDetailSerializer,
-    CommentSerializer,
-    UserSerializer,
-)
-from .permissions import (
-    IsLoggedIn,
-    IsOwnerOrMember,
-    IsOwnerToDelete,
-    IsMemberToCreate,
-    IsMemberToUpdate,
-    IsCreatorTaskrOrOwnerBoardToDelete,
-    IsMemberToCreateComment,
-    IsOwnerOfCommentToDelete,
-)
+
+from kanban_app.models import Boards, Comment, Task, User
+
+from .permissions import (IsCreatorTaskrOrOwnerBoardToDelete, IsLoggedIn,
+                          IsMemberToCreate, IsMemberToCreateComment,
+                          IsMemberToUpdate, IsOwnerOfCommentToDelete,
+                          IsOwnerOrMember, IsOwnerToDelete)
+from .serializer import (BoardDetailSerializer, BoardListSerializer,
+                         CommentSerializer, TaskDetailSerializer,
+                         TaskListSerializer, UserSerializer)
 
 
 class BoardListView(generics.ListCreateAPIView):

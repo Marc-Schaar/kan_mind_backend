@@ -1,15 +1,10 @@
 from django.urls import path
-from kanban_app.api.views import (
-    BoardListView,
-    BoardDetailView,
-    TaskListView,
-    TaskDetailView,
-    TaskAssignedToMeView,
-    TaskReviewingView,
-    CommentOfTasksList,
-    CommentOfTasksListDetail,
-    EmailCheckView,
-)
+
+from kanban_app.api.views import (BoardDetailView, BoardListView,
+                                  CommentOfTasksList, CommentOfTasksListDetail,
+                                  EmailCheckView, TaskAssignedToMeView,
+                                  TaskDetailView, TaskListView,
+                                  TaskReviewingView)
 
 urlpatterns = [
     path("boards/", BoardListView.as_view(), name="board-list"),
