@@ -85,19 +85,19 @@ class IsCreatorTaskrOrOwnerBoardToDelete(BasePermission):
 
 
 class IsMemberToCreateComment(BasePermission):
-    """
-    Allow POST to create comments only if user is a member of the board associated with the task.
-    """
-
     def has_permission(self, request, view):
         if request.method == "POST":
             user = request.user
-            task_id = request.data.get("task")
+            task_id = view.kwargs.get("pk")
 
-            exists = Boards.objects.filter(
-                tasks__id=task_id, members__id=user.id
+            if not task_id:
+                return False  # kein Task vorhanden
+
+            return Boards.objects.filter(
+                tasks__id=task_id,
+                members__id=user.id
             ).exists()
-            return exists
+
         return True
 
 

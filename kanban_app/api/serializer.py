@@ -50,6 +50,7 @@ class TaskListSerializer(serializers.ModelSerializer):
         source="reviewer", queryset=User.objects.all(), write_only=True
     )
     comments_count = serializers.SerializerMethodField()
+    creator = UserSerializer(read_only=True)
 
     class Meta:
         model = Task
@@ -66,7 +67,15 @@ class TaskListSerializer(serializers.ModelSerializer):
             "reviewer_id",
             "due_date",
             "comments_count",
+            "creator"
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        request = self.context.get("request")
+        if request and request.method in ["GET"]:
+            self.fields.pop("creator", None)
 
     def get_comments_count(self, obj):
         return obj.comments.count()
@@ -87,6 +96,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
         source="reviewer", queryset=User.objects.all(), write_only=True
     )
     comments = CommentSerializer(many=True, read_only=True)
+    creator = UserSerializer(read_only=True)
 
     class Meta:
         model = Task
@@ -103,14 +113,19 @@ class TaskDetailSerializer(serializers.ModelSerializer):
             "reviewer_id",
             "due_date",
             "comments",
+            "creator"
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         request = self.context.get("request")
+        if request and request.method in ["GET"]:
+            self.fields.pop("creator", None)
+
         if request and request.method in ["PUT", "PATCH"]:
             self.fields.pop("comments", None)
+       
 
 
 class BoardListSerializer(serializers.ModelSerializer):

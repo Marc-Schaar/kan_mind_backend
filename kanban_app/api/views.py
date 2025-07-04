@@ -89,6 +89,30 @@ class TaskListView(generics.ListCreateAPIView):
     serializer_class = TaskListSerializer
     permission_classes = [IsMemberToCreate]
 
+    def create(self, request, *args, **kwargs):
+            serializer = self.get_serializer(data=request.data)
+        
+
+            if serializer.is_valid():
+                task = serializer.save(creator_id=self.request.user.id)
+                data = {
+                    "id": task.id,
+                    "board": task.board.id,
+                    "title": task.title,
+                    "description": task.description,
+                    "status": task.status,
+                    "priority": task.priority,
+                    "assignee": task.assignee.id,
+                    "reviewer": task.reviewer.id,
+                    "due_date": task.due_date,
+                    "comments_count": task.comments.count(),
+                }
+                return Response(data, status=status.HTTP_201_CREATED)
+
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
