@@ -31,8 +31,8 @@ It supports user registration, authentication, boards, tasks, comments, and perm
 1. **Clone the repository**
 
     ```bash
-    git clone https://github.com/your-username/kanmind.git
-    cd kanmind
+    git clone https://github.com/your-username/kan_mind_backend.git
+    cd kan_mind_backend
     ```
 
 2. **Create and activate a virtual environment**
@@ -52,6 +52,7 @@ It supports user registration, authentication, boards, tasks, comments, and perm
 4. **Apply migrations**
 
     ```bash
+    python manage.py makemigrations
     python manage.py migrate
     ```
 
