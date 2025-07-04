@@ -32,7 +32,7 @@ It supports user registration, authentication, boards, tasks, comments, and perm
 
     ```bash
     git clone https://github.com/your-username/kan_mind_backend.git
-    cd kanmind
+    cd kan_mind_backend
     ```
 
 2. **Create and activate a virtual environment**
