@@ -5,7 +5,7 @@ from django.db import models
 class Boards(models.Model):
     title = models.CharField(max_length=100, blank=False, null=False)
     owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="owned_boards"
+        User, on_delete=models.CASCADE, related_name="owned_boards", default=None
     )
     members = models.ManyToManyField(User, related_name="boards")
     member_count = models.IntegerField(default=0)
