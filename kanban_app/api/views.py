@@ -248,25 +248,23 @@ class CommentOfTasksListDetail(generics.DestroyAPIView):
         return Comment.objects.filter(task_id=task_id)
 
 
-class EmailCheckView(generics.ListAPIView):
+class EmailCheckView(generics.GenericAPIView):
     """
     API endpoint to check if a user with the given email exists.
 
     get:
-    Return the user(s) matching the email query parameter. Returns 404 if none found.
+    Return the user matching the email query parameter. Returns 404 if not found.
     """
     serializer_class = UserSerializer
 
-    def get_queryset(self):
-        email = self.request.query_params.get("email", None)
-        return User.objects.filter(email=email)
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        if not queryset:
+    def get(self, request, *args, **kwargs):
+        email = request.query_params.get("email")
+        user = User.objects.filter(email=email).first()
+        if not user:
             return Response(
-                {"error": " Email nicht gefunden. Die Email exestiert nicht."},
+                {"error": "Email nicht gefunden. Die Email existiert nicht."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+        serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
