@@ -73,6 +73,29 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BoardDetailSerializer
     permission_classes = [IsOwnerOrMember, IsOwnerToDelete]
 
+    def patch(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
+
+        if serializer.is_valid():
+            board = serializer.save()
+            member_data = [
+                {"id": user.id,
+                 "email": user.email,
+                 "fullname": user.username}
+                for user in board.members.all()
+            ]
+
+            data = serializer.data
+            data["member_data"] = member_data
+            data.pop("members", None)
+
+            return Response(data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class TaskListView(generics.ListCreateAPIView):
     """
@@ -90,28 +113,26 @@ class TaskListView(generics.ListCreateAPIView):
     permission_classes = [IsMemberToCreate]
 
     def create(self, request, *args, **kwargs):
-            serializer = self.get_serializer(data=request.data)
-        
+        serializer = self.get_serializer(data=request.data)
 
-            if serializer.is_valid():
-                task = serializer.save(creator_id=self.request.user.id)
-                data = {
-                    "id": task.id,
-                    "board": task.board.id,
-                    "title": task.title,
-                    "description": task.description,
-                    "status": task.status,
-                    "priority": task.priority,
-                    "assignee": task.assignee.id,
-                    "reviewer": task.reviewer.id,
-                    "due_date": task.due_date,
-                    "comments_count": task.comments.count(),
-                }
-                return Response(data, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            task = serializer.save(creator_id=self.request.user.id)
+            data = {
+                "id": task.id,
+                "board": task.board.id,
+                "title": task.title,
+                "description": task.description,
+                "status": task.status,
+                "priority": task.priority,
+                "assignee": task.assignee.id,
+                "reviewer": task.reviewer.id,
+                "due_date": task.due_date,
+                "comments_count": task.comments.count(),
+            }
+            return Response(data, status=status.HTTP_201_CREATED)
 
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
