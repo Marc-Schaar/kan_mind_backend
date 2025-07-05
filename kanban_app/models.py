@@ -31,7 +31,8 @@ class Task(models.Model):
         ("high", "High"),
     ]
 
-    board = models.ForeignKey(Boards, on_delete=models.CASCADE, related_name="tasks")
+    board = models.ForeignKey(
+        Boards, on_delete=models.CASCADE, related_name="tasks")
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     status = models.CharField(choices=STATUS_CHOICES, default="to-do")
@@ -50,7 +51,7 @@ class Task(models.Model):
         related_name="review_tasks",
         on_delete=models.SET_NULL,
     )
-    due_date = models.DateTimeField(null=True, blank=True)
+    due_date = models.DateField(null=True, blank=True)
     creator = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="created_tasks"
     )
@@ -63,7 +64,8 @@ def __str__(self):
 class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="comments")
+    task = models.ForeignKey(
+        Task, on_delete=models.CASCADE, related_name="comments")
     content = models.TextField()
 
     def __str__(self):
