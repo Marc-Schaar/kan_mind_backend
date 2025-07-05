@@ -124,8 +124,14 @@ class TaskListView(generics.ListCreateAPIView):
                 "description": task.description,
                 "status": task.status,
                 "priority": task.priority,
-                "assignee": task.assignee.id,
-                "reviewer": task.reviewer.id,
+                "assignee": {
+                    "id": task.assignee.id,
+                    "email": task.assignee.email,
+                    "fullname": task.assignee.username},
+                "reviewer": {
+                    "id": task.reviewer.id,
+                    "email": task.reviewer.email,
+                    "fullname": task.reviewer.username},
                 "due_date": task.due_date,
                 "comments_count": task.comments.count(),
             }

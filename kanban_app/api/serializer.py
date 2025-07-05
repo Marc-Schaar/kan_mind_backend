@@ -125,7 +125,6 @@ class TaskDetailSerializer(serializers.ModelSerializer):
 
         if request and request.method in ["PUT", "PATCH"]:
             self.fields.pop("comments", None)
-       
 
 
 class BoardListSerializer(serializers.ModelSerializer):
