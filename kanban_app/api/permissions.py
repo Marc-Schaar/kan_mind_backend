@@ -1,4 +1,5 @@
 from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework.exceptions import NotFound, PermissionDenied
 
 from kanban_app.models import Boards
 
@@ -47,9 +48,18 @@ class IsMemberToCreate(BasePermission):
             user = request.user
             board_id = request.data.get("board")
 
-            exists = Boards.objects.filter(
-                id=board_id, members__id=user.id).exists()
-            return exists
+            if not board_id:
+                raise NotFound(
+                    detail="Ungültige Anfragedaten. Möglicherweise fehlen erforderliche Felder oder enthalten ungültige Werte")
+
+            if not Boards.objects.filter(id=board_id).exists():
+                raise NotFound(
+                    detail=f"Board nicht gefunden. Die angegebene Board-ID: {board_id} existiert nicht.")
+
+            if not Boards.objects.filter(id=board_id, members__id=user.id).exists():
+                raise PermissionDenied(
+                    detail="Verboten. Der Benutzer muss Mitglied des Boards sein, um eine Task zu erstellen")
+
         return True
 
 
@@ -63,9 +73,18 @@ class IsMemberToUpdate(BasePermission):
             user = request.user
             board_id = request.data.get("board")
 
-            exists = Boards.objects.filter(
-                id=board_id, members__id=user.id).exists()
-            return exists
+            if not board_id:
+                raise NotFound(
+                    detail="Ungültige Anfragedaten. Möglicherweise fehlen erforderliche Felder oder enthalten ungültige Werte")
+
+            if not Boards.objects.filter(id=board_id).exists():
+                raise NotFound(
+                    detail=f"Board nicht gefunden. Die angegebene Board-ID: {board_id} existiert nicht.")
+
+            if not Boards.objects.filter(id=board_id, members__id=user.id).exists():
+                raise PermissionDenied(
+                    detail="Verboten. Der Benutzer muss Mitglied des Boards sein, um eine Task zu erstellen")
+
         return True
 
 
@@ -91,12 +110,15 @@ class IsMemberToCreateComment(BasePermission):
             task_id = view.kwargs.get("pk")
 
             if not task_id:
-                return False  # kein Task vorhanden
+                raise NotFound(detail="Task-ID fehlt in der URL.")
 
-            return Boards.objects.filter(
-                tasks__id=task_id,
-                members__id=user.id
-            ).exists()
+            if not Boards.objects.filter(tasks__id=task_id).exists():
+                raise NotFound(
+                    detail=f"Task mit ID {task_id} wurde nicht gefunden.")
+
+            if not Boards.objects.filter(tasks__id=task_id, members__id=user.id).exists():
+                raise PermissionDenied(
+                    detail="Du bist kein Mitglied des Boards zu dieser Task.")
 
         return True
 

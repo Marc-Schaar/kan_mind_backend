@@ -206,15 +206,14 @@ class CommentOfTasksList(generics.ListCreateAPIView):
     Create a new comment on the specified task. The author is set to the current user.
     """
     serializer_class = CommentSerializer
-    permission_classes = [IsMemberToCreateComment]
+    permission_classes = [IsLoggedIn, IsMemberToCreateComment]
 
     def get_task(self):
         pk = self.kwargs.get("pk")
         return get_object_or_404(Task, pk=pk)
 
     def get_queryset(self):
-        pk = self.kwargs.get("pk")
-        task = Task.objects.get(pk=pk)
+        task = self.get_task()
         return task.comments.all().order_by("-created_at")
 
     def create(self, request, *args, **kwargs):
