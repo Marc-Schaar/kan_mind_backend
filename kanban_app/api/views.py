@@ -229,7 +229,7 @@ class CommentOfTasksList(generics.ListCreateAPIView):
             data = {
                 "id": comment.id,
                 "created_at": comment.created_at,
-                "author": comment.author.id,
+                "author": comment.author.username,
                 "content": comment.content,
             }
             return Response(data, status=status.HTTP_201_CREATED)

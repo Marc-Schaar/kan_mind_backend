@@ -32,7 +32,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ["id", "created_at", "author", "content"]
 
     def get_author(self, obj):
-        return obj.author.get_full_name() or obj.author.username
+        return obj.author.username
 
 
 class TaskListSerializer(serializers.ModelSerializer):
