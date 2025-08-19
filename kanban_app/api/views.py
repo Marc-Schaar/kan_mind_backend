@@ -81,7 +81,7 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         if serializer.is_valid():
             board = serializer.save()
-            member_data = [
+            members_data = [
                 {"id": user.id,
                  "email": user.email,
                  "fullname": user.username}
@@ -89,7 +89,7 @@ class BoardDetailView(generics.RetrieveUpdateDestroyAPIView):
             ]
 
             data = serializer.data
-            data["member_data"] = member_data
+            data["members_data"] = members_data
             data.pop("members", None)
 
             return Response(data)

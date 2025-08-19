@@ -5,7 +5,7 @@ __pycache__/
 
 # Django migrations
 **/migrations/
-!**/migrations/__init__.py  # <- damit Django weiß, dass es ein Paket ist
+!**/migrations/__init__.py
 
 # SQLite database
 *.sqlite3
