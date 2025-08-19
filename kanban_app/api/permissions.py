@@ -1,7 +1,7 @@
 from rest_framework.permissions import SAFE_METHODS, BasePermission
-from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError, NotAuthenticated
 
-from kanban_app.models import Boards
+from kanban_app.models import Boards, Task
 
 
 class IsLoggedIn(BasePermission):
@@ -40,50 +40,52 @@ class IsOwnerToDelete(BasePermission):
 
 class IsMemberToCreate(BasePermission):
     """
-    Allow POST only if user is a member of the board specified in the request data.
+    Allow POST only if user is a member of the board specified in the URL.
     """
 
     def has_permission(self, request, view):
         if request.method == "POST":
             user = request.user
-            board_id = request.data.get("board")
+            board_id = view.kwargs.get("pk") or request.data.get("board")
 
             if not board_id:
-                raise NotFound(
-                    detail="Ungültige Anfragedaten. Möglicherweise fehlen erforderliche Felder oder enthalten ungültige Werte")
+                raise ValidationError(
+                    detail="Board-ID fehlt."
+                )
 
             if not Boards.objects.filter(id=board_id).exists():
                 raise NotFound(
-                    detail=f"Board nicht gefunden. Die angegebene Board-ID: {board_id} existiert nicht.")
+                    detail=f"Board nicht gefunden. Die angegebene Board-ID: {board_id} existiert nicht."
+                )
 
             if not Boards.objects.filter(id=board_id, members__id=user.id).exists():
                 raise PermissionDenied(
-                    detail="Verboten. Der Benutzer muss Mitglied des Boards sein, um eine Task zu erstellen")
+                    detail="Verboten. Der Benutzer muss Mitglied des Boards sein, um eine Task zu erstellen."
+                )
 
         return True
 
 
 class IsMemberToUpdate(BasePermission):
     """
-    Allow PUT/PATCH only if user is a member of the board specified in the request data.
+    Allow PUT/PATCH only if user is a member of the board the task belongs to.
     """
 
     def has_permission(self, request, view):
-        if request.method == "PATCH" or request.method == "PUT":
+        if request.method in ["PATCH", "PUT"]:
             user = request.user
-            board_id = request.data.get("board")
+            task_id = view.kwargs.get("pk")
+            task = Task.objects.filter(pk=task_id).first()
 
-            if not board_id:
+            if not task:
                 raise NotFound(
-                    detail="Ungültige Anfragedaten. Möglicherweise fehlen erforderliche Felder oder enthalten ungültige Werte")
+                    detail=f"Task mit ID {task_id} existiert nicht."
+                )
 
-            if not Boards.objects.filter(id=board_id).exists():
-                raise NotFound(
-                    detail=f"Board nicht gefunden. Die angegebene Board-ID: {board_id} existiert nicht.")
-
-            if not Boards.objects.filter(id=board_id, members__id=user.id).exists():
+            if not Boards.objects.filter(id=task.board_id, members__id=user.id).exists():
                 raise PermissionDenied(
-                    detail="Verboten. Der Benutzer muss Mitglied des Boards sein, um eine Task zu erstellen")
+                    detail="Verboten. Der Benutzer muss Mitglied des Boards sein, um eine Task zu bearbeiten."
+                )
 
         return True
 
@@ -105,7 +107,7 @@ class IsCreatorTaskrOrOwnerBoardToDelete(BasePermission):
 
 class IsMemberToCreateComment(BasePermission):
     def has_permission(self, request, view):
-        if request.method == "POST":
+        if request.method in ["GET", "POST"]:
             user = request.user
             task_id = view.kwargs.get("pk")
 
@@ -118,7 +120,7 @@ class IsMemberToCreateComment(BasePermission):
 
             if not Boards.objects.filter(tasks__id=task_id, members__id=user.id).exists():
                 raise PermissionDenied(
-                    detail="Du bist kein Mitglied des Boards zu dieser Task.")
+                    detail="Verboten. Der Benutzer muss Mitglied des Boards sein, zu dem die Task gehört")
 
         return True
 

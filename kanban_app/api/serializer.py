@@ -87,6 +87,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
     Includes nested assignee, reviewer, and comments.
     Comments field is excluded on update requests (PUT/PATCH).
     """
+
     assignee = UserSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
         source="assignee", queryset=User.objects.all(), write_only=True
