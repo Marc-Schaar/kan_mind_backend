@@ -3,10 +3,6 @@ __pycache__/
 *.py[cod]
 *.so
 
-# Django migrations
-**/migrations/
-!**/migrations/__init__.py
-
 # SQLite database
 *.sqlite3
 *.db
