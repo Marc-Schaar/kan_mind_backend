@@ -54,6 +54,7 @@ media/
 # Secrets & config
 .env
 .env.*
+!.env.example
 
 # Node (falls du Frontend im Projekt hast)
 node_modules/
