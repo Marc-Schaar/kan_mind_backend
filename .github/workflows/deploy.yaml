@@ -24,8 +24,8 @@ jobs:
             cd /home/marc/projects/kanmind
 
             echo "=== Git Pull ==="
-            git fetch origin dev
-            git reset --hard origin/dev
+            git fetch origin master
+            git reset --hard origin/master
 
             echo "=== Python Setup ==="
             source venv/bin/activate
