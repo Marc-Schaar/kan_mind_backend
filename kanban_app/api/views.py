@@ -108,9 +108,11 @@ class TaskListView(generics.ListCreateAPIView):
     Create a new task (only members allowed).
     """
 
-    queryset = Task.objects.all()
     serializer_class = TaskListSerializer
-    permission_classes = [IsMemberToCreate]
+    permission_classes = [IsLoggedIn, IsMemberToCreate]
+
+    def get_queryset(self):
+        return Task.objects.filter(board__members=self.request.user).distinct()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

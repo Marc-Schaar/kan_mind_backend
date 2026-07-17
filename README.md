@@ -10,6 +10,7 @@ Built with Django and Django REST Framework, deployed to a production server wit
 ![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
 ![DRF](https://img.shields.io/badge/Django%20REST%20Framework-3.16-A30000?logo=django&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-production-4169E1?logo=postgresql&logoColor=white)
+[![Deploy to Server](https://github.com/Marc-Schaar/kan_mind_backend/actions/workflows/deploy.yaml/badge.svg)](https://github.com/Marc-Schaar/kan_mind_backend/actions/workflows/deploy.yaml)
 
 ---
 
@@ -102,7 +103,6 @@ The API handles boards, tasks, and comments with role-based permissions, so mult
 5. **Apply migrations**
 
     ```bash
-    python manage.py makemigrations
     python manage.py migrate
     ```
 
@@ -117,6 +117,22 @@ The API handles boards, tasks, and comments with role-based permissions, so mult
     ```bash
     python manage.py runserver
     ```
+
+---
+
+## Testing
+
+The test suite covers authentication (registration, login, user profiles) and the Kanban domain logic (boards, tasks, comments), including permission checks such as board-membership and ownership rules.
+
+Run the full suite locally:
+
+```bash
+python manage.py test
+```
+
+Tests run against SQLite regardless of the configured production database, since `DEBUG=True` selects SQLite in `core/settings.py` (see [Tech Stack](#tech-stack)). Test files live in `kanban_app/tests/` and `auth_app/tests/`.
+
+Every push to `master` runs the suite in GitHub Actions (`.github/workflows/deploy.yaml`) before deploying; a failing test blocks the deployment.
 
 ---
 
@@ -177,7 +193,6 @@ pip install -r requirements.txt
 
 # .env created as described above
 
-python manage.py makemigrations
 python manage.py migrate
 python manage.py collectstatic --noinput
 python manage.py createsuperuser
@@ -245,11 +260,12 @@ sudo certbot --nginx -d kanmind.marc-schaar.com -d www.kanmind.marc-schaar.com
 git pull
 source env/bin/activate
 pip install -r requirements.txt
-python manage.py makemigrations
 python manage.py migrate
 python manage.py collectstatic --noinput
 sudo systemctl restart kanmind
 ```
+
+Migration files are committed to the repository (not gitignored), so `migrate` on the server only ever applies migrations that were already generated and reviewed locally — never run `makemigrations` against the production database.
 
 </details>
 
