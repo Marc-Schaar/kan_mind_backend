@@ -1,10 +1,12 @@
-# ![KanMind Logo](assets/icons/logo_icon.svg) KanMind Backend API
+<h1 align="left">
+  <img src="assets/icons/logo_icon.svg" width="36" height="36" align="left" style="margin-right: 12px;" alt="KanMind Logo" />
+  KanMind Backend API
+</h1>
+
+<br clear="left" />
 
 **RESTful API backend for KanMind — a collaborative Kanban board application.**
 Built with Django and Django REST Framework, deployed to a production server with PostgreSQL, Gunicorn, and Nginx.
-
-🔗 **Live API:** [kanmind.marc-schaar.com](https://kanmind.marc-schaar.com)
-🌐 **Portfolio:** [marc-schaar.com](https://marc-schaar.com)
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
@@ -12,7 +14,11 @@ Built with Django and Django REST Framework, deployed to a production server wit
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-production-4169E1?logo=postgresql&logoColor=white)
 [![Deploy to Server](https://github.com/Marc-Schaar/kan_mind_backend/actions/workflows/deploy.yaml/badge.svg)](https://github.com/Marc-Schaar/kan_mind_backend/actions/workflows/deploy.yaml)
 
+🔗 **Live API:** [kanmind.marc-schaar.com](https://kanmind.marc-schaar.com) · 📁 **Repository:** [github.com/Marc-Schaar/kan_mind_backend](https://github.com/Marc-Schaar/kan_mind_backend) · 🌐 **Portfolio:** [marc-schaar.com](https://marc-schaar.com)
+
 ---
+
+> 🇩🇪 **Kurzfassung auf Deutsch:** KanMind ist eine REST-API für ein Trello-artiges Kanban-Board, gebaut mit Django und Django REST Framework. Sie bietet token-basierte Authentifizierung, rollenbasierte Berechtigungen für Boards/Tasks/Kommentare und läuft produktiv hinter Gunicorn und Nginx mit PostgreSQL — inklusive automatisierten Tests und CI/CD-Deployment über GitHub Actions. [Live-API →](https://kanmind.marc-schaar.com)
 
 ## About the project
 
@@ -22,7 +28,7 @@ The API handles boards, tasks, and comments with role-based permissions, so mult
 
 ---
 
-## Features
+## ✨ Features
 
 - User registration and token-based authentication
 - CRUD operations on Boards, Tasks, and Comments
@@ -33,7 +39,7 @@ The API handles boards, tasks, and comments with role-based permissions, so mult
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 | Layer          | Technology                              |
 |----------------|------------------------------------------|
@@ -67,7 +73,7 @@ The API handles boards, tasks, and comments with role-based permissions, so mult
 
 ---
 
-## Local Development Setup
+## 🚀 Local Development Setup
 
 **Requirements:** Python 3.10+, pip, virtualenv
 
@@ -120,7 +126,7 @@ The API handles boards, tasks, and comments with role-based permissions, so mult
 
 ---
 
-## Testing
+## ✅ Testing
 
 The test suite covers authentication (registration, login, user profiles) and the Kanban domain logic (boards, tasks, comments), including permission checks such as board-membership and ownership rules.
 
@@ -130,13 +136,13 @@ Run the full suite locally:
 python manage.py test
 ```
 
-Tests run against SQLite regardless of the configured production database, since `DEBUG=True` selects SQLite in `core/settings.py` (see [Tech Stack](#tech-stack)). Test files live in `kanban_app/tests/` and `auth_app/tests/`.
+Tests run against SQLite regardless of the configured production database, since `DEBUG=True` selects SQLite in `core/settings.py` (see the Tech Stack section above). Test files live in `kanban_app/tests/` and `auth_app/tests/`.
 
 Every push to `master` runs the suite in GitHub Actions (`.github/workflows/deploy.yaml`) before deploying; a failing test blocks the deployment.
 
 ---
 
-## Production Deployment
+## 🚢 Production Deployment
 
 The live instance at **[kanmind.marc-schaar.com](https://kanmind.marc-schaar.com)** runs behind Gunicorn and Nginx, with PostgreSQL as the database and HTTPS via Let's Encrypt. Summary of the setup:
 
@@ -271,7 +277,9 @@ Migration files are committed to the repository (not gitignored), so `migrate` o
 
 ---
 
-## Author
+## 👤 Author
 
 **Marc Schaar**
-🌐 [marc-schaar.com](https://marc-schaar.com)
+📧 [kontakt@marc-schaar.com](mailto:kontakt@marc-schaar.com) · 🌐 [marc-schaar.com](https://marc-schaar.com) · 💻 [GitHub](https://github.com/Marc-Schaar)
+
+This project is part of my portfolio, built to demonstrate a complete backend workflow — API design, authentication, authorization, testing, and a real production deployment.
